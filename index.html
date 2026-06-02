@@ -2,17 +2,20 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contracheque</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+  <title>Contracheque · Folha de Pagamento</title>
+  <!-- Fonte moderna e leve -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="app">
     <!-- Tela de Login -->
     <div id="login-container">
-      <h2>Área do Funcionário</h2>
+      <h2>📄 Contracheque</h2>
+      <p class="sub">Acesse seu holerite</p>
       <form id="login-form">
-        <input type="text" id="username" placeholder="Código" required autocomplete="off">
+        <input type="text" id="username" placeholder="Código do funcionário" required autocomplete="off" inputmode="text">
         <input type="password" id="password" placeholder="Senha" required>
         <button type="submit">Entrar</button>
       </form>
@@ -24,24 +27,25 @@
       <div class="contracheque">
         <div class="cabecalho">
           <h1>CONTRACHEQUE</h1>
-          <p class="empresa">Empresa: Minha Empresa Ltda.</p>
+          <p class="empresa">Empresa: Minha Empresa Ltda. • Folha Padrão</p>
           <div class="info-funcionario">
-            <p><strong>Nome:</strong> <span id="nome-funcionario"></span></p>
-            <p><strong>Código:</strong> <span id="codigo-funcionario"></span></p>
+            <p><strong>👤 Nome:</strong> <span id="nome-funcionario"></span></p>
+            <p><strong>🆔 Código:</strong> <span id="codigo-funcionario"></span></p>
           </div>
         </div>
         <div class="conteudo" id="dados-funcionario">
-          <!-- Será preenchido via JS -->
+          <!-- Os dados serão preenchidos dinamicamente pelo script.js -->
         </div>
         <div class="rodape">
-          <p class="total-label">TOTAL A RECEBER</p>
-          <p class="total-valor" id="total-value"></p>
+          <p class="total-label">💰 TOTAL A RECEBER</p>
+          <p class="total-valor" id="total-value">—</p>
         </div>
-        <button id="logout-btn" class="btn-sair">Sair</button>
+        <button id="logout-btn" class="btn-sair">Sair da conta</button>
       </div>
     </div>
   </div>
 
+  <!-- O script.js permanece inalterado e mantém toda a lógica original -->
   <script src="script.js"></script>
 </body>
 </html>
