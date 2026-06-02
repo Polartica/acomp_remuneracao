@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contracheque</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Tela de Login -->
+    <div id="login-container">
+      <h2>Área do Funcionário</h2>
+      <form id="login-form">
+        <input type="text" id="username" placeholder="Código" required autocomplete="off">
+        <input type="password" id="password" placeholder="Senha" required>
+        <button type="submit">Entrar</button>
+      </form>
+      <div id="error-message" class="error"></div>
+    </div>
+
+    <!-- Dashboard (oculto inicialmente) -->
+    <div id="dashboard-container" style="display: none;">
+      <div class="contracheque">
+        <div class="cabecalho">
+          <h1>CONTRACHEQUE</h1>
+          <p class="empresa">Empresa: Minha Empresa Ltda.</p>
+          <div class="info-funcionario">
+            <p><strong>Nome:</strong> <span id="nome-funcionario"></span></p>
+            <p><strong>Código:</strong> <span id="codigo-funcionario"></span></p>
+          </div>
+        </div>
+        <div class="conteudo" id="dados-funcionario">
+          <!-- Será preenchido via JS -->
+        </div>
+        <div class="rodape">
+          <p class="total-label">TOTAL A RECEBER</p>
+          <p class="total-valor" id="total-value"></p>
+        </div>
+        <button id="logout-btn" class="btn-sair">Sair</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

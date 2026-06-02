@@ -1,0 +1,159 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+#app {
+  width: 100%;
+  max-width: 750px;
+}
+
+/* Login */
+#login-container {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  text-align: center;
+}
+#login-container h2 {
+  margin-bottom: 20px;
+  color: #1a3e72;
+}
+#login-form input {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+#login-form button {
+  width: 100%;
+  padding: 14px;
+  background: #1a3e72;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
+#login-form button:hover {
+  background: #0f2b52;
+}
+.error {
+  color: #d32f2f;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+/* Contracheque */
+.contracheque {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 25px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+.cabecalho {
+  background: #1a3e72;
+  color: white;
+  padding: 25px 30px;
+  text-align: center;
+}
+.cabecalho h1 {
+  font-size: 26px;
+  letter-spacing: 2px;
+}
+.cabecalho .empresa {
+  font-size: 14px;
+  opacity: 0.9;
+  margin: 5px 0 15px;
+}
+.info-funcionario {
+  text-align: left;
+  display: flex;
+  justify-content: space-around;
+  font-size: 15px;
+}
+
+.conteudo {
+  padding: 20px 30px;
+}
+
+.grupo {
+  margin-bottom: 20px;
+  border-bottom: 1px dashed #ccc;
+  padding-bottom: 10px;
+}
+.grupo:last-child {
+  border-bottom: none;
+}
+.grupo h3 {
+  color: #1a3e72;
+  font-size: 18px;
+  margin-bottom: 10px;
+  background: #eef2f7;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+.linha {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 10px;
+  font-size: 14px;
+}
+.linha .rotulo {
+  color: #555;
+}
+.linha .valor {
+  font-weight: 600;
+  color: #111;
+}
+
+.rodape {
+  background: #e8ecf1;
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 2px solid #1a3e72;
+}
+.total-label {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1a3e72;
+}
+.total-valor {
+  font-size: 22px;
+  font-weight: bold;
+  color: #1a3e72;
+}
+.btn-sair {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 0 0 12px 12px;
+  transition: background 0.3s;
+}
+.btn-sair:hover {
+  background: #b71c1c;
+}
