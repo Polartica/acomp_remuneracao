@@ -24,16 +24,21 @@ loginForm.addEventListener('submit', async (e) => {
   }
 
   try {
+    // Usando application/x-www-form-urlencoded para evitar CORS preflight
+    const formData = new URLSearchParams();
+    formData.append('username', username);
+    formData.append('password', password);
+
     const response = await fetch(API_URL, {
       method: 'POST',
-      mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: formData.toString()
     });
 
     const result = await response.json();
     if (result.success) {
-      // Login OK, exibir dados
       exibirDados(result.data);
       loginContainer.style.display = 'none';
       dashboardContainer.style.display = 'block';
@@ -46,7 +51,6 @@ loginForm.addEventListener('submit', async (e) => {
     console.error(err);
   }
 });
-
 // Logout
 logoutBtn.addEventListener('click', () => {
   dashboardContainer.style.display = 'none';
