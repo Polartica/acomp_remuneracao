@@ -1,7 +1,7 @@
 // ⚠️ SUBSTITUA COM A URL DO SEU WEB APP DEPOIS DE PUBLICAR
 const API_URL = "https://script.google.com/macros/s/AKfycbyW1AlUlyGCY6kSL6ESZqiPXbtk73Hnb2hzQhzn3Ijl8XPcVlBvXgQoqwayfxaSY7z9/exec"
 
-// Elementos
+// Elementos do DOM
 const loginContainer = document.getElementById('login-container');
 const dashboardContainer = document.getElementById('dashboard-container');
 const loginForm = document.getElementById('login-form');
@@ -11,6 +11,14 @@ const codigoFuncionario = document.getElementById('codigo-funcionario');
 const dadosContainer = document.getElementById('dados-funcionario');
 const totalValue = document.getElementById('total-value');
 const logoutBtn = document.getElementById('logout-btn');
+
+// Função auxiliar: calcular hash SHA-256 (retorna string hexadecimal)
+async function sha256(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 // Evento de login
 loginForm.addEventListener('submit', async (e) => {
@@ -24,20 +32,19 @@ loginForm.addEventListener('submit', async (e) => {
   }
 
   try {
-    // Usando application/x-www-form-urlencoded para evitar CORS preflight
-    const formData = new URLSearchParams();
-    formData.append('username', username);
-    formData.append('password', password);
+    // Calcular o hash da senha (SHA-256)
+    const passwordHash = await sha256(password);
 
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: formData.toString()
+    // Construir a URL com os parâmetros (GET)
+    const url = `${API_URL}?username=${encodeURIComponent(username)}&hash=${encodeURIComponent(passwordHash)}`;
+
+    // Requisição simples (sem preflight)
+    const response = await fetch(url, {
+      method: 'GET'
     });
 
     const result = await response.json();
+
     if (result.success) {
       exibirDados(result.data);
       loginContainer.style.display = 'none';
@@ -51,6 +58,7 @@ loginForm.addEventListener('submit', async (e) => {
     console.error(err);
   }
 });
+
 // Logout
 logoutBtn.addEventListener('click', () => {
   dashboardContainer.style.display = 'none';
@@ -65,14 +73,11 @@ function showError(msg) {
 }
 
 function exibirDados(data) {
-  // Cabeçalho
-  nomeFuncionario.textContent = data.Nome || '';
-  codigoFuncionario.textContent = data.Codigo || '';
+  nomeFuncionario.textContent = data['Nome'] || '';
+  codigoFuncionario.textContent = data['Código'] || '';
 
-  // Limpar dados anteriores
   dadosContainer.innerHTML = '';
 
-  // Agrupamento lógico das informações
   const grupos = [
     {
       titulo: 'Informações Básicas',
@@ -100,7 +105,6 @@ function exibirDados(data) {
     }
   ];
 
-  // Construir os grupos dinamicamente
   grupos.forEach(grupo => {
     const divGrupo = document.createElement('div');
     divGrupo.className = 'grupo';
@@ -113,9 +117,6 @@ function exibirDados(data) {
         let valor = data[chave];
         if (valor === undefined || valor === null || valor === '') {
           valor = '—';
-        } else if (typeof valor === 'string' && valor.includes(',')) {
-          // Formato brasileiro: substitui vírgula por ponto para exibição, mas mantém original
-          valor = valor; // Já está com vírgula, podemos apenas exibir
         }
         const linha = document.createElement('div');
         linha.className = 'linha';
@@ -127,6 +128,5 @@ function exibirDados(data) {
     dadosContainer.appendChild(divGrupo);
   });
 
-  // Total
   totalValue.textContent = data['TOTAL'] ? data['TOTAL'] : '—';
 }
