@@ -148,7 +148,7 @@ const LoginModule = {
         username: username,
         password: password
       });
-
+      console.log(result)
       if (result && result.success) {
         DashboardModule.exibirDados(result.data);
         document.getElementById('login-container').style.display = 'none';

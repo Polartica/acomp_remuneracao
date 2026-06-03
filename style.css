@@ -203,7 +203,7 @@ body {
 }
 
 .btn-icon-text {
-  background: var(--accent);
+  background: var(--secondary);
   color: white;
   border: none;
   padding: 10px 12px;
@@ -214,7 +214,7 @@ body {
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3);
+  /* box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3); */
 }
 
 .user-profile {
