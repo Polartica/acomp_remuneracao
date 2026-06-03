@@ -604,3 +604,10 @@ body {
   display: inline-block;
   animation: spin 1s linear infinite;
 }
+
+.footer-note {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
