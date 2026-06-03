@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-  <title>Contracheque · Folha de Pagamento</title>
-  <!-- Fonte moderna e leve -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <title>Visibilidade de Resultados · Desempenho</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="app">
     <!-- Tela de Login -->
     <div id="login-container">
-      <h2>📄 Contracheque</h2>
-      <p class="sub">Acesse seu holerite</p>
+      <h2>Resultados</h2>
+      <p class="sub">Acompanhe seu desempenho atual</p>
       <form id="login-form">
         <input type="text" id="username" placeholder="Código do funcionário" required autocomplete="off" inputmode="text">
         <input type="password" id="password" placeholder="Senha" required>
@@ -26,8 +25,11 @@
     <div id="dashboard-container" style="display: none;">
       <div class="contracheque">
         <div class="cabecalho">
-          <h1>CONTRACHEQUE</h1>
-          <p class="empresa">Empresa: Minha Empresa Ltda. • Folha Padrão</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <h1 style="margin:0;">Visibilidade de Resultados</h1>
+            <button id="abrir-chamado-btn" class="btn-chamado" style="background: #ff9800; border: none; color: white; padding: 8px 16px; border-radius: 30px; font-weight: bold; cursor: pointer;">📢 Abrir Chamado</button>
+          </div>
+          <p class="empresa">Empresa: Polartica Distribuidora de Bebidas AmBev </p>
           <div class="info-funcionario">
             <p><strong>👤 Nome:</strong> <span id="nome-funcionario"></span></p>
             <p><strong>🆔 Código:</strong> <span id="codigo-funcionario"></span></p>
@@ -38,14 +40,31 @@
         </div>
         <div class="rodape">
           <p class="total-label">💰 TOTAL A RECEBER</p>
-          <p class="total-valor" id="total-value">R$ —</p>
+          <p class="total-valor" id="total-value">—</p>
         </div>
         <button id="logout-btn" class="btn-sair">Sair da conta</button>
       </div>
     </div>
   </div>
 
-  <!-- O script.js permanece inalterado e mantém toda a lógica original -->
+  <!-- MODAL para abrir chamado -->
+  <div id="modal-chamado" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h3>Enviar Feedback</h3>
+      <form id="form-chamado">
+        <label for="assunto">Assunto:</label>
+        <input type="text" id="assunto" required>
+
+        <label for="descricao">Descrição:</label>
+        <textarea id="descricao" rows="4" required></textarea>
+
+        <button type="submit">Enviar Feedback</button>
+      </form>
+      <div id="msg-chamado" style="margin-top: 10px; font-size: 0.9rem;"></div>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
