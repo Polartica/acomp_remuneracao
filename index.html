@@ -48,22 +48,61 @@
   </div>
 
   <!-- MODAL para abrir chamado -->
-  <div id="modal-chamado" class="modal" style="display: none;">
-    <div class="modal-content">
-      <span class="close-modal">&times;</span>
-      <h3>Enviar Feedback</h3>
-      <form id="form-chamado">
-        <label for="assunto">Assunto:</label>
-        <input type="text" id="assunto" required>
+<!-- MODAL CHAMADOS -->
+<div id="modal-chamado" class="modal" style="display:none;">
 
-        <label for="descricao">Descrição:</label>
-        <textarea id="descricao" rows="4" required></textarea>
+  <div class="modal-content modal-chamados">
 
-        <button type="submit">Enviar Feedback</button>
-      </form>
-      <div id="msg-chamado" style="margin-top: 10px; font-size: 0.9rem;"></div>
+    <span class="close-modal">&times;</span>
+
+    <div class="chamados-grid">
+
+      <!-- FORMULÁRIO -->
+      <div class="novo-chamado">
+
+        <h3>📢 Abrir Chamado</h3>
+
+        <form id="form-chamado">
+
+          <label for="assunto">Assunto</label>
+          <input type="text" id="assunto" required>
+
+          <label for="descricao">Descrição</label>
+          <textarea id="descricao" rows="5" required></textarea>
+
+          <button type="submit">
+            Enviar Chamado
+          </button>
+
+        </form>
+
+        <div id="msg-chamado"></div>
+
+      </div>
+
+      <!-- CHAMADOS ABERTOS -->
+      <div class="painel-chamados">
+
+        <div class="painel-header">
+          <h3>📋 Meus Chamados</h3>
+          <span id="total-chamados">0 abertos</span>
+        </div>
+
+        <div id="lista-chamados">
+
+          <div class="empty-state">
+            Nenhum chamado aberto.
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
+
   </div>
+
+</div>
 
   <script src="script.js"></script>
 </body>

@@ -1,5 +1,5 @@
 // URL do Web App Google Apps Script
-const API_URL = "https://script.google.com/macros/s/AKfycbyW1AlUlyGCY6kSL6ESZqiPXbtk73Hnb2hzQhzn3Ijl8XPcVlBvXgQoqwayfxaSY7z9/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyW1AlUlyGCY6kSL6ESZqiPXbtk73Hnb2hzQhzn3Ijl8XPcVlBvXgQoqwayfxaSY7z9/exec"
 
 // =====================
 // ELEMENTOS DOM
@@ -13,8 +13,17 @@ const nomeFuncionario = document.getElementById('nome-funcionario');
 const codigoFuncionario = document.getElementById('codigo-funcionario');
 const dadosContainer = document.getElementById('dados-funcionario');
 const totalValue = document.getElementById('total-value');
+const password = document.getElementById('password').value.trim();
 
 const logoutBtn = document.getElementById('logout-btn');
+
+const listaChamados = document.getElementById('lista-chamados');
+const totalChamados = document.getElementById('total-chamados');
+
+let usuarioLogado = {
+  codigo: '',
+  nome: ''
+};
 
 // =====================
 // LOGIN
@@ -87,7 +96,18 @@ loginForm.addEventListener('submit', async (e) => {
 // LOGOUT
 // =====================
 logoutBtn.addEventListener('click', () => {
+      usuarioLogado = {
+      codigo: '',
+      nome: ''
+    };
 
+    if (listaChamados) {
+      listaChamados.innerHTML = '';
+    }
+
+    if (totalChamados) {
+      totalChamados.textContent = '0 aberto(s)';
+    }
   dashboardContainer.style.display = 'none';
   loginContainer.style.display = 'block';
 
@@ -117,7 +137,8 @@ function showError(msg) {
 function exibirDados(data) {
   nomeFuncionario.textContent = data['Nome'] || '';
   codigoFuncionario.textContent = data['Código'] || '';
-
+    usuarioLogado.codigo = data['Código'] || '';
+  usuarioLogado.nome = data['Nome'] || '';
   dadosContainer.innerHTML = '';
 
   // Lista de campos que devem ser formatados como moeda (R$)
@@ -254,78 +275,238 @@ const closeModal = document.querySelector('.close-modal');
 const formChamado = document.getElementById('form-chamado');
 const msgChamado = document.getElementById('msg-chamado');
 
-// Abrir modal
+// ---------------------
+// ABRIR MODAL
+// ---------------------
+
 abrirChamadoBtn.addEventListener('click', () => {
+
   modal.style.display = 'flex';
+
   document.getElementById('assunto').value = '';
   document.getElementById('descricao').value = '';
+
   msgChamado.innerHTML = '';
+
+  carregarChamados();
+
 });
 
-// Fechar modal
+// ---------------------
+// FECHAR MODAL
+// ---------------------
+
 closeModal.addEventListener('click', () => {
   modal.style.display = 'none';
 });
+
 window.addEventListener('click', (e) => {
-  if (e.target === modal) modal.style.display = 'none';
+  if (e.target === modal) {
+    modal.style.display = 'none';
+  }
 });
 
-// Enviar chamado
-formChamado.addEventListener('submit', async (e) => {
+// ---------------------
+// CARREGAR CHAMADOS
+// ---------------------
+
+function carregarChamados() {
+
+  const callbackName = 'listarChamados_' + Date.now() + '_' + Math.floor(Math.random() * 99999);
+  const script = document.createElement('script');
+
+  window[callbackName] = function(result) {
+    try {
+      if (!result || !result.success) {
+        listaChamados.innerHTML =
+          `<div class="empty-state">
+            Erro ao carregar chamados.
+          </div>`;
+        return;
+      }
+
+      const chamados = result.chamados || [];
+
+      totalChamados.textContent = `${chamados.length} aberto(s)`;
+
+      if (!chamados.length) {
+        listaChamados.innerHTML =
+          `<div class="empty-state">
+            Nenhum chamado aberto.
+          </div>`;
+
+        return;
+      }
+      console.log(chamados)
+      listaChamados.innerHTML = chamados.map(chamado => {
+
+        const statusClasse =
+          chamado.status
+            .toLowerCase()
+            .replace(/\s/g,'');
+
+        return `
+          <div class="chamado-card">
+            <div class="chamado-topo">
+              <div>
+
+                <div class="chamado-assunto">
+                  ${chamado.assunto} - ${chamado.dataHora}
+                </div>
+
+                <div class="chamado-descricao">
+                  ${chamado.descricao || ''}<br>
+                  ${chamado.retorno || ''}
+                </div>
+              </div>
+
+              <span class="chamado-status status-${statusClasse}">
+                ${chamado.status}
+              </span>
+
+            </div>
+
+
+
+            ${
+              chamado.tempoResposta
+              ? `
+                <div class="chamado-tempo">
+                  ⏱ Tempo resposta: ${chamado.tempoResposta}
+                </div>
+              `
+              : ''
+            }
+
+          </div>
+        `;
+
+      }).join('');
+
+    } finally {
+
+      delete window[callbackName];
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+
+    }
+
+  };
+
+  script.onerror = () => {
+
+    listaChamados.innerHTML =
+      `<div class="empty-state">
+        Falha de conexão.
+      </div>`;
+
+    delete window[callbackName];
+
+    if (script.parentNode) {
+      script.parentNode.removeChild(script);
+    }
+
+  };
+
+  script.src =
+    `${API_URL}` +
+    `?action=chamados` +
+    `&codigo=${encodeURIComponent(usuarioLogado.codigo)}` +
+    `&callback=${callbackName}`;
+
+  document.body.appendChild(script);
+
+}
+
+// ---------------------
+// ABRIR CHAMADO
+// ---------------------
+
+formChamado.addEventListener('submit', (e) => {
+
   e.preventDefault();
-  const assunto = document.getElementById('assunto').value.trim();
-  const descricao = document.getElementById('descricao').value.trim();
+
+  const assunto =
+    document.getElementById('assunto').value.trim();
+
+  const descricao =
+    document.getElementById('descricao').value.trim();
 
   if (!assunto || !descricao) {
-    msgChamado.innerHTML = '<span style="color:red;">Preencha todos os campos.</span>';
+
+    msgChamado.innerHTML =
+      '<span style="color:red;">Preencha todos os campos.</span>';
+
     return;
   }
 
-  // Pega dados do funcionário logado
-  const nome = document.getElementById('nome-funcionario').innerText;
-  const codigo = document.getElementById('codigo-funcionario').innerText;
+  const callbackName =
+    'chamado_' +
+    Date.now() +
+    '_' +
+    Math.floor(Math.random() * 99999);
 
-  const formData = new URLSearchParams();
-  formData.append('action', 'abrir_chamado');
-  formData.append('codigo', codigo);
-  formData.append('nome', nome);
-  formData.append('assunto', assunto);
-  formData.append('descricao', descricao);
+  const script = document.createElement('script');
 
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: formData.toString()
-    });
-    const result = await response.json();
-    if (result.success) {
-      msgChamado.innerHTML = '<span style="color:green;">✅ Chamado enviado com sucesso!</span>';
-      setTimeout(() => modal.style.display = 'none', 1500);
-    } else {
-      msgChamado.innerHTML = `<span style="color:red;">❌ Erro: ${result.message}</span>`;
+  window[callbackName] = function(result) {
+
+    try {
+
+      if (result.success) {
+
+        msgChamado.innerHTML =
+          '<span style="color:green;">✅ Chamado enviado com sucesso.</span>';
+
+        formChamado.reset();
+
+        carregarChamados();
+
+      } else {
+
+        msgChamado.innerHTML =
+          `<span style="color:red;">❌ ${result.message}</span>`;
+
+      }
+
+    } finally {
+
+      delete window[callbackName];
+
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+
     }
-  } catch (err) {
-    msgChamado.innerHTML = '<span style="color:red;">Erro de conexão.</span>';
-    console.error(err);
-  }
+
+  };
+
+  script.onerror = () => {
+
+    msgChamado.innerHTML =
+      '<span style="color:red;">Erro de conexão.</span>';
+
+    delete window[callbackName];
+
+    if (script.parentNode) {
+      script.parentNode.removeChild(script);
+    }
+
+  };
+
+  script.src =
+    `${API_URL}` +
+    `?action=abrir_chamado` +
+    `&codigo=${encodeURIComponent(usuarioLogado.codigo)}` +
+    `&nome=${encodeURIComponent(usuarioLogado.nome)}` +
+    `&assunto=${encodeURIComponent(assunto)}` +
+    `&descricao=${encodeURIComponent(descricao)}` +
+    `&callback=${callbackName}`;
+
+  document.body.appendChild(script);
+
 });
 
-
-// Função para buscar histórico (mesmo padrão do login)
-function carregarHistorico() {
-  const codigo = document.getElementById('codigo-funcionario').innerText;
-  if (!codigo) return;
-  
-  const callbackName = 'historicoCallback_' + Date.now();
-  window[callbackName] = function(result) {
-    // exibir chamados...
-    delete window[callbackName];
-  };
-  
-  const script = document.createElement('script');
-  script.src = `${API_URL}?acao=historico&codigo=${encodeURIComponent(codigo)}&callback=${callbackName}`;
-  document.body.appendChild(script);
-}
 
 
