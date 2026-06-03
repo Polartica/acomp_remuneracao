@@ -3,7 +3,7 @@
 // ==============================
 // CONFIGURAÇÃO GLOBAL
 // ==============================
-const API_URL = "https://script.google.com/macros/s/AKfycbyW1AlUlyGCY6kSL6ESZqiPXbtk73Hnb2hzQhzn3Ijl8XPcVlBvXgQoqwayfxaSY7z9/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwGUKmuJtbIuaWhoTZDJYHA_Hw-Wr0bmGOp2UWdAyFRlIPC1fr8DeWuW0nASxiy4Rs/exec"
 
 // ==============================
 // GERENCIADOR DE REQUISIÇÕES JSONP
@@ -12,13 +12,6 @@ const jsonp = (() => {
   let requestId = 0;
   const pendingRequests = new Map();
 
-  /**
-   * Faz uma requisição JSONP
-   * @param {Object} params - Parâmetros da URL
-   * @param {string} [callbackParam='callback'] - Nome do parâmetro callback
-   * @param {number} timeout - Timeout em ms
-   * @returns {Promise<any>}
-   */
   function request(params, callbackParam = 'callback', timeout = 15000) {
     return new Promise((resolve, reject) => {
       const id = ++requestId;
@@ -26,7 +19,6 @@ const jsonp = (() => {
       const script = document.createElement('script');
       let timer;
 
-      // Limpeza
       const cleanup = () => {
         if (window[callbackName]) delete window[callbackName];
         if (script.parentNode) script.parentNode.removeChild(script);
@@ -34,13 +26,11 @@ const jsonp = (() => {
         pendingRequests.delete(callbackName);
       };
 
-      // Timeout
       timer = setTimeout(() => {
         cleanup();
         reject(new Error('Tempo limite da requisição excedido.'));
       }, timeout);
 
-      // Callback global
       window[callbackName] = (data) => {
         cleanup();
         resolve(data);
@@ -51,7 +41,6 @@ const jsonp = (() => {
         reject(new Error('Falha na conexão com o servidor.'));
       };
 
-      // Monta URL
       const urlParams = new URLSearchParams(params);
       urlParams.set(callbackParam, callbackName);
       script.src = `${API_URL}?${urlParams.toString()}`;
@@ -70,7 +59,7 @@ const jsonp = (() => {
 const ChamadosCache = {
   dados: null,
   timestamp: null,
-  ttl: 30000, // 30 segundos
+  ttl: 30000,
 
   isValid() {
     return this.dados !== null && this.timestamp !== null && (Date.now() - this.timestamp) < this.ttl;
@@ -97,7 +86,7 @@ const ChamadosCache = {
 const Utils = {
   showError(msg) {
     const errorDiv = document.getElementById('error-message');
-    if (errorDiv) errorDiv.textContent = msg;
+    if (errorDiv) errorDiv.innerHTML = msg ? `<i class="ph-fill ph-warning-circle"></i> ${msg}` : '';
   },
 
   formatarMoeda(valor) {
@@ -138,6 +127,9 @@ const LoginModule = {
 
   async handleLogin(e) {
     e.preventDefault();
+    const btn = document.querySelector('#login-form button');
+    const originalBtnText = btn.innerHTML;
+    
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
 
@@ -147,9 +139,12 @@ const LoginModule = {
     }
 
     Utils.showError('');
+    btn.innerHTML = '<i class="ph ph-spinner-gap ph-spin"></i> Carregando...';
+    btn.disabled = true;
 
     try {
       const result = await jsonp.request({
+        action: 'login',
         username: username,
         password: password
       });
@@ -165,12 +160,15 @@ const LoginModule = {
     } catch (error) {
       console.error('Login error:', error);
       Utils.showError('Não foi possível conectar ao servidor.');
+    } finally {
+      btn.innerHTML = originalBtnText;
+      btn.disabled = false;
     }
   }
 };
 
 // ==============================
-// MÓDULO DE DASHBOARD (dados do funcionário)
+// MÓDULO DE DASHBOARD
 // ==============================
 const DashboardModule = {
   usuarioLogado: {
@@ -212,37 +210,22 @@ const DashboardModule = {
     };
 
     const grupos = [
-      {
-        titulo: '📋 Informações Básicas',
-        campos: ['Tempo de empresa', 'Base', 'Dias trabalhados']
-      },
-      {
-        titulo: '📆 Frequência',
-        campos: ['Folgas', 'Atestado', 'Faltas', 'Total faltas atestado']
-      },
-      {
-        titulo: '📊 Produtividade',
-        campos: ['TML', 'PRODUTIVIDADE', 'Tempo médio de liberação / Checklist', 'Tempo em rota (escala) (Experiência)']
-      },
-      {
-        titulo: '💳 Vales e Ocorrências',
-        campos: ['Vales e Atend.', 'Quebra de Caixa', 'Não Haver vales não autorizados', '85% de Entrega no Cliente e Não Haver vales não autorizados', 'Não Haver Falta Injustificada/ Relatos']
-      },
-      {
-        titulo: '📦 Devoluções',
-        campos: ['DEVOLUÇÕES', 'Não haver devolução por responsábilidade própria']
-      },
-      {
-        titulo: '💰 Vencimentos e Proventos',
-        campos: ['HE Ajustadas', '85%', 'Prêmio tempo de empresa sem falta', 'Comissão Caixa', 'DSR', 'DSR HE', 'Quinquenio', 'Prêmio', 'HE']
-      }
+      { titulo: '📋 Informações Básicas', campos: ['Tempo de empresa', 'Base', 'Dias trabalhados'] },
+      { titulo: '📆 Frequência', campos: ['Folgas', 'Atestado', 'Faltas', 'Total faltas atestado'] },
+      { titulo: '📊 Produtividade', campos: ['TML', 'PRODUTIVIDADE', 'Tempo médio de liberação / Checklist', 'Tempo em rota (escala) (Experiência)'] },
+      { titulo: '💳 Vales e Ocorrências', campos: ['Vales e Atend.', 'Quebra de Caixa', 'Não Haver vales não autorizados', '85% de Entrega no Cliente e Não Haver vales não autorizados', 'Não Haver Falta Injustificada/ Relatos'] },
+      { titulo: '📦 Devoluções', campos: ['DEVOLUÇÕES', 'Não haver devolução por responsábilidade própria'] },
+      { titulo: '💰 Vencimentos e Proventos', campos: ['HE Ajustadas', '85%', 'Prêmio tempo de empresa sem falta', 'Comissão Caixa', 'DSR', 'DSR HE', 'Quinquenio', 'Prêmio', 'HE'] }
     ];
 
     grupos.forEach(grupo => {
-      const divGrupo = document.createElement('div');
+      const divGrupo = document.createElement('details');
       divGrupo.className = 'grupo';
-      const titulo = document.createElement('h3');
-      titulo.textContent = grupo.titulo;
+      divGrupo.open = true;
+
+      const titulo = document.createElement('summary');
+      // Adicionado o ícone chevron no CSS ao invés do html bruto, e estruturado para o flexbox
+      titulo.innerHTML = `<span>${grupo.titulo}</span> <i class="ph-bold ph-caret-down chevron-icon"></i>`;
       divGrupo.appendChild(titulo);
 
       grupo.campos.forEach(chave => {
@@ -307,7 +290,7 @@ const ChamadosModule = {
       if (assuntoInput) assuntoInput.value = '';
       if (descricaoInput) descricaoInput.value = '';
       if (this.msgEl) this.msgEl.innerHTML = '';
-      this.carregarChamados(true); // força recarga ao abrir modal
+      this.carregarChamados(true); 
     }
   },
 
@@ -324,11 +307,10 @@ const ChamadosModule = {
     const codigo = DashboardModule.usuarioLogado.codigo;
     if (!codigo) return;
 
+    this.renderizarErro('<i class="ph ph-spinner-gap ph-spin"></i> Carregando chamados...');
+
     try {
-      const result = await jsonp.request({
-        action: 'chamados',
-        codigo: codigo
-      });
+      const result = await jsonp.request({ action: 'chamados', codigo: codigo });
 
       if (!result || !result.success) {
         this.renderizarErro('Erro ao carregar chamados.');
@@ -339,7 +321,6 @@ const ChamadosModule = {
       ChamadosCache.set(chamados);
       this.renderizarChamados(chamados);
     } catch (error) {
-      console.error('Erro carregar chamados:', error);
       this.renderizarErro('Falha de conexão ao carregar chamados.');
     }
   },
@@ -349,44 +330,53 @@ const ChamadosModule = {
     this.totalEl.textContent = `${chamados.length} aberto(s)`;
 
     if (!chamados.length) {
-      this.listaEl.innerHTML = `<div class="empty-state">Nenhum chamado aberto.</div>`;
+      this.listaEl.innerHTML = `<div class="empty-state"><i class="ph-fill ph-tray"></i><p>Nenhum chamado aberto.</p></div>`;
       return;
     }
 
+    // HTML reformulado para os cards com ícones modernos
     this.listaEl.innerHTML = chamados.map(chamado => {
       const statusClasse = Utils.escapeHtml(chamado.status).toLowerCase().replace(/\s/g, '');
       return `
         <div class="chamado-card">
           <div class="chamado-topo">
-            <div>
-              <div class="chamado-assunto">${Utils.escapeHtml(chamado.assunto)} - ${Utils.escapeHtml(chamado.dataHora)}</div>
-              <div class="chamado-descricao">${Utils.escapeHtml(chamado.descricao)}<br>${Utils.escapeHtml(chamado.retorno)}</div>
+            <div class="chamado-info">
+              <span class="chamado-assunto"><i class="ph-fill ph-ticket"></i> ${Utils.escapeHtml(chamado.assunto)}</span>
+              <span class="chamado-data"><i class="ph ph-calendar-blank"></i> ${Utils.escapeHtml(chamado.dataHora)}</span>
             </div>
             <span class="chamado-status status-${statusClasse}">${Utils.escapeHtml(chamado.status)}</span>
           </div>
-          ${chamado.tempoResposta ? `<div class="chamado-tempo">⏱ Tempo resposta: ${Utils.escapeHtml(chamado.tempoResposta)}</div>` : ''}
+          <div class="chamado-descricao">
+            <p><strong>Descrição:</strong> ${Utils.escapeHtml(chamado.descricao)}</p>
+            ${chamado.retorno ? `<div class="chamado-retorno"><strong>Retorno:</strong> ${Utils.escapeHtml(chamado.retorno)}</div>` : ''}
+          </div>
+          ${chamado.tempoResposta ? `<div class="chamado-tempo"><i class="ph-fill ph-clock-counter-clockwise"></i> Tempo resposta: ${Utils.escapeHtml(chamado.tempoResposta)}</div>` : ''}
         </div>
       `;
     }).join('');
   },
 
   renderizarErro(mensagem) {
-    if (this.listaEl) this.listaEl.innerHTML = `<div class="empty-state">${Utils.escapeHtml(mensagem)}</div>`;
+    if (this.listaEl) this.listaEl.innerHTML = `<div class="empty-state">${mensagem}</div>`;
   },
 
   async enviarChamado(e) {
     e.preventDefault();
+    const btn = document.querySelector('#form-chamado button');
+    const originalBtnText = btn.innerHTML;
     const assuntoInput = document.getElementById('assunto');
     const descricaoInput = document.getElementById('descricao');
     const assunto = assuntoInput ? assuntoInput.value.trim() : '';
     const descricao = descricaoInput ? descricaoInput.value.trim() : '';
 
     if (!assunto || !descricao) {
-      if (this.msgEl) this.msgEl.innerHTML = '<span style="color:red;">Preencha todos os campos.</span>';
+      if (this.msgEl) this.msgEl.innerHTML = '<span style="color:var(--danger);"><i class="ph-fill ph-warning-circle"></i> Preencha todos os campos.</span>';
       return;
     }
 
     const { codigo, nome } = DashboardModule.usuarioLogado;
+    btn.innerHTML = '<i class="ph ph-spinner-gap ph-spin"></i> Enviando...';
+    btn.disabled = true;
 
     try {
       const result = await jsonp.request({
@@ -398,17 +388,19 @@ const ChamadosModule = {
       });
 
       if (result && result.success) {
-        if (this.msgEl) this.msgEl.innerHTML = '<span style="color:green;">✅ Chamado enviado com sucesso.</span>';
+        if (this.msgEl) this.msgEl.innerHTML = '<span style="color:var(--success);"><i class="ph-fill ph-check-circle"></i> Chamado enviado com sucesso!</span>';
         if (assuntoInput) assuntoInput.value = '';
         if (descricaoInput) descricaoInput.value = '';
-        ChamadosCache.clear(); // limpa cache para forçar recarga
+        ChamadosCache.clear(); 
         await this.carregarChamados(true);
       } else {
-        if (this.msgEl) this.msgEl.innerHTML = `<span style="color:red;">❌ ${Utils.escapeHtml(result?.message || 'Erro desconhecido')}</span>`;
+        if (this.msgEl) this.msgEl.innerHTML = `<span style="color:var(--danger);"><i class="ph-fill ph-x-circle"></i> ${Utils.escapeHtml(result?.message || 'Erro desconhecido')}</span>`;
       }
     } catch (error) {
-      console.error('Erro ao enviar chamado:', error);
-      if (this.msgEl) this.msgEl.innerHTML = '<span style="color:red;">Erro de conexão ao enviar chamado.</span>';
+      if (this.msgEl) this.msgEl.innerHTML = '<span style="color:var(--danger);"><i class="ph-fill ph-wifi-slash"></i> Erro de conexão ao enviar.</span>';
+    } finally {
+      btn.innerHTML = originalBtnText;
+      btn.disabled = false;
     }
   }
 };

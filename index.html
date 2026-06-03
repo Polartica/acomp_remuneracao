@@ -2,107 +2,133 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a2b4e">
   <title>Visibilidade de Resultados · Desempenho</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Fontes e Ícones -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="app">
+    
     <!-- Tela de Login -->
-    <div id="login-container">
-      <h2>Resultados</h2>
-      <p class="sub">Acompanhe seu desempenho atual</p>
+    <div id="login-container" class="modern-card">
+      <div class="login-header">
+        <div class="">
+          <img src="logo.png" width="128px">
+        </div>
+        <h2>Resultados</h2>
+        <p class="sub">Acompanhe seu desempenho atual</p>
+      </div>
+      
       <form id="login-form">
-        <input type="text" id="username" placeholder="Código do funcionário" required autocomplete="off" inputmode="text">
-        <input type="password" id="password" placeholder="Senha" required>
-        <button type="submit">Entrar</button>
+        <div class="input-group">
+          <i class="ph ph-identification-card"></i>
+          <input type="text" id="username" placeholder="Código do funcionário" required autocomplete="off" inputmode="numeric">
+        </div>
+        <div class="input-group">
+          <i class="ph ph-lock-key"></i>
+          <input type="password" id="password" placeholder="Senha" required>
+        </div>
+        <button type="submit" class="btn-primary">
+          Entrar <i class="ph-bold ph-arrow-right"></i>
+        </button>
       </form>
       <div id="error-message" class="error"></div>
     </div>
 
     <!-- Dashboard (oculto inicialmente) -->
     <div id="dashboard-container" style="display: none;">
-      <div class="contracheque">
-        <div class="cabecalho">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-            <h1 style="margin:0;">Visibilidade de Resultados</h1>
-            <button id="abrir-chamado-btn" class="btn-chamado" style="background: #ff9800; border: none; color: white; padding: 8px 16px; border-radius: 30px; font-weight: bold; cursor: pointer;">📢 Abrir Chamado</button>
+      
+      <!-- Cabeçalho estilo App de Banco -->
+      <header class="app-header">
+        <div class="header-top">
+          <div class="empresa-badge">
+            <i class="ph-fill ph-buildings"></i> Polartica AmBev
           </div>
-          <p class="empresa">Empresa: Polartica Distribuidora de Bebidas AmBev </p>
-          <div class="info-funcionario">
-            <p><strong>👤 Nome:</strong> <span id="nome-funcionario"></span></p>
-            <p><strong>🆔 Código:</strong> <span id="codigo-funcionario"></span></p>
+          <button id="abrir-chamado-btn" class="btn-icon-text">
+            <i class="ph-bold ph-headset"></i> Feedback
+          </button>
+        </div>
+        
+        <div class="user-profile">
+          <div class="avatar">
+            <i class="ph-fill ph-user"></i>
+          </div>
+          <div class="user-info">
+            <p class="saudacao">Olá,</p>
+            <h1 id="nome-funcionario">Nome do Funcionário</h1>
+            <span class="user-id">Código: <strong id="codigo-funcionario">0000</strong></span>
           </div>
         </div>
+
+        <!-- Cartão de Saldo Total Movid0 para o Topo -->
+        <div class="balance-card">
+          <div class="balance-label">
+            <i class="ph-fill ph-wallet"></i> TOTAL A RECEBER
+          </div>
+          <h2 id="total-value" class="total-valor">—</h2>
+        </div>
+      </header>
+
+      <main class="conteudo-scroll">
         <div class="conteudo" id="dados-funcionario">
           <!-- Os dados serão preenchidos dinamicamente pelo script.js -->
         </div>
-        <div class="rodape">
-          <p class="total-label">💰 TOTAL A RECEBER</p>
-          <p class="total-valor" id="total-value">—</p>
-        </div>
-        <button id="logout-btn" class="btn-sair">Sair da conta</button>
-      </div>
+
+        <button id="logout-btn" class="btn-sair">
+          <i class="ph-bold ph-sign-out"></i> Sair da conta
+        </button>
+      </main>
     </div>
   </div>
 
-  <!-- MODAL para abrir chamado -->
-<!-- MODAL CHAMADOS -->
-<div id="modal-chamado" class="modal" style="display:none;">
+  <!-- MODAL CHAMADOS (Estilo Bottom Sheet no Mobile) -->
+  <div id="modal-chamado" class="modal" style="display:none;">
+    <div class="modal-content">
+      <div class="modal-drag-handle"></div>
+      <button class="close-modal" aria-label="Fechar"><i class="ph-bold ph-x"></i></button>
 
-  <div class="modal-content modal-chamados">
-
-    <span class="close-modal">&times;</span>
-
-    <div class="chamados-grid">
-
-      <!-- FORMULÁRIO -->
-      <div class="novo-chamado">
-
-        <h3>📢 Abrir Chamado</h3>
-
-        <form id="form-chamado">
-
-          <label for="assunto">Assunto</label>
-          <input type="text" id="assunto" required>
-
-          <label for="descricao">Descrição</label>
-          <textarea id="descricao" rows="5" required></textarea>
-
-          <button type="submit">
-            Enviar Chamado
-          </button>
-
-        </form>
-
-        <div id="msg-chamado"></div>
-
-      </div>
-
-      <!-- CHAMADOS ABERTOS -->
-      <div class="painel-chamados">
-
-        <div class="painel-header">
-          <h3>📋 Meus Chamados</h3>
-          <span id="total-chamados">0 abertos</span>
+      <div class="chamados-container">
+        
+        <!-- FORMULÁRIO -->
+        <div class="novo-chamado box-section">
+          <h3><i class="ph-fill ph-paper-plane-tilt"></i> Abrir Novo Chamado</h3>
+          <form id="form-chamado">
+            <div class="input-group">
+              <input type="text" id="assunto" placeholder="Assunto" required>
+            </div>
+            <div class="input-group">
+              <textarea id="descricao" rows="4" placeholder="Descreva sua solicitação com detalhes..." required></textarea>
+            </div>
+            <button type="submit" class="btn-primary">
+              Enviar Chamado <i class="ph-bold ph-paper-plane-right"></i>
+            </button>
+          </form>
+          <div id="msg-chamado"></div>
         </div>
 
-        <div id="lista-chamados">
-
-          <div class="empty-state">
-            Nenhum chamado aberto.
+        <!-- CHAMADOS ABERTOS -->
+        <div class="painel-chamados box-section">
+          <div class="painel-header">
+            <h3><i class="ph-fill ph-list-bullets"></i> Meus Chamados</h3>
+            <span id="total-chamados" class="badge">0 abertos</span>
           </div>
-
+          <div id="lista-chamados" class="lista-scroll">
+            <div class="empty-state">
+              <i class="ph ph-tray"></i>
+              <p>Nenhum chamado aberto.</p>
+            </div>
+          </div>
         </div>
 
       </div>
-
     </div>
-
   </div>
-
-</div>
 
   <script src="script.js"></script>
 </body>
