@@ -22,12 +22,8 @@ const logoutBtn = document.getElementById('logout-btn');
 loginForm.addEventListener('submit', async (e) => {
 
   e.preventDefault();
-
-  const username =
-    document.getElementById('username').value.trim();
-
-  const password =
-    document.getElementById('password').value.trim();
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
 
   if (!username || !password) {
     showError('Preencha todos os campos.');
@@ -36,36 +32,23 @@ loginForm.addEventListener('submit', async (e) => {
 
   errorMessage.textContent = '';
 
-  const callbackName =
-    'loginCallback_' +
-    Date.now() +
-    '_' +
-    Math.floor(Math.random() * 100000);
-
+  const callbackName = 'loginCallback_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
   const script = document.createElement('script');
 
   window[callbackName] = function(result) {
-
     try {
-
       if (result && result.success) {
-
         exibirDados(result.data);
-
         loginContainer.style.display = 'none';
         dashboardContainer.style.display = 'block';
-
         errorMessage.textContent = '';
-
       } else {
 
         showError(
           result?.message ||
           'Usuário ou senha inválidos.'
         );
-
       }
-
     } finally {
 
       delete window[callbackName];
@@ -141,27 +124,26 @@ function exibirDados(data) {
   const camposMonetarios = [
     'Base',
     'Quebra de Caixa',
+    'Comissão',
     'Vales e Atend.',
     'Quinquenio',
-    'Prêmio tempo de empresa sem falta',
-    'HE Ajustadas',
     'DSR',
     'DSR HE',
-    'Prêmio',
     'HE',
+    'Prêmio',
     'TOTAL'
   ];
 
   // Mapeamento de nomes amigáveis (opcional)
   const nomesAmigaveis = {
-    'Base': '💰 Salário Base',
-    'Quebra de Caixa': '📉 Quebra de Caixa',
-    'Vales e Atend.': '🏧 Vales e Adiantamentos',
-    'Quinquenio': '⏱️ Quinquênio',
-    'Prêmio tempo de empresa sem falta': '🏆 Prêmio Tempo de Empresa',
+    'Base': 'Salário Base',
+    'Quebra de Caixa': 'Quebra de Caixa',
+    'Vales e Atend.': 'Vales e Adiantamentos',
+    'Quinquenio': 'Quinquênio',
+    'Prêmio tempo de empresa sem falta': '🏆Tempo de Empresa',
     'HE Ajustadas': '⏰ Horas Extras Ajustadas',
     'DSR': '📅 DSR',
-    'DSR HE': '📅 DSR sobre HE',
+    'DSR HE': '📅 DSR sobre Hora extra',
     'Prêmio': '🎁 Prêmio',
     'HE': '⏰ Horas Extras',
     'TOTAL': '💵 TOTAL LÍQUIDO'
@@ -178,7 +160,6 @@ function exibirDados(data) {
     return isNaN(num) ? null : num;
   }
 
-  // Função para formatar como moeda brasileira
   function formatarMoeda(valor) {
     if (valor === undefined || valor === null || valor === '') return '—';
     
