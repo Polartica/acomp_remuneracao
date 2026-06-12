@@ -87,7 +87,7 @@ const Utils = {
   showError(msg) {
     const errorDiv = document.getElementById('error-message');
     if (errorDiv) errorDiv.innerHTML = msg ? `<i class="ph-fill ph-warning-circle"></i> ${msg}` : '';
-  },
+  };
 
   formatarMoeda(valor) {
     if (valor === undefined || valor === null || valor === '') return '—';
