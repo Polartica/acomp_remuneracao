@@ -94,7 +94,7 @@ const Utils = {
     const num = this.converterParaNumero(valor);
     if (num === null) return String(valor);
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
-  },
+  };
 
   formatarPercentual(valor) {
     if (valor === undefined || valor === null || valor === '') return '—';
