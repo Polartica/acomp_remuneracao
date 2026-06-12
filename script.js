@@ -96,6 +96,14 @@ const Utils = {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
   },
 
+  formatarPercentual(valor) {
+    if (valor === undefined || valor === null || valor === '') return '—';
+    const num = this.converterParaNumero(valor);
+    num = num*100;
+    if (num === null) return String(valor);
+    return new String(valor);
+  }
+
   converterParaNumero(valor) {
     if (valor === undefined || valor === null || valor === '') return null;
     if (typeof valor === 'number') return valor;
@@ -195,6 +203,10 @@ const DashboardModule = {
       'Quinquenio', 'DSR', 'DSR HE', 'HE', 'Prêmio', 'TOTAL'
     ];
 
+    const camposPercentual = [
+      'PRODUTIVIDADE'
+      ];
+
     const nomesAmigaveis = {
       'Base': 'Salário Base',
       'Quebra de Caixa': 'Quebra de Caixa',
@@ -236,6 +248,8 @@ const DashboardModule = {
             valor = '—';
           } else if (camposMonetarios.includes(chave)) {
             valor = Utils.formatarMoeda(valor);
+          } else if (camposPercentual.includes(chave)) {
+            valor = Utils.formatarPercentual(valor);
           }
           const linha = document.createElement('div');
           linha.className = 'linha';
