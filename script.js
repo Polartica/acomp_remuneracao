@@ -102,7 +102,7 @@ const Utils = {
     num = num*100;
     if (num === null) return String(valor);
     return new String(valor);
-  }
+  };
 
   converterParaNumero(valor) {
     if (valor === undefined || valor === null || valor === '') return null;
