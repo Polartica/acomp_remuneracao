@@ -110,7 +110,7 @@ const Utils = {
     const str = String(valor).trim().replace(/\./g, '').replace(',', '.');
     const num = parseFloat(str);
     return isNaN(num) ? null : num;
-  },
+  };
 
   escapeHtml(str) {
     if (str === undefined || str === null) return '';
