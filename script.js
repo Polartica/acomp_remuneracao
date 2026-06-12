@@ -87,22 +87,14 @@ const Utils = {
   showError(msg) {
     const errorDiv = document.getElementById('error-message');
     if (errorDiv) errorDiv.innerHTML = msg ? `<i class="ph-fill ph-warning-circle"></i> ${msg}` : '';
-  };
+  },
 
   formatarMoeda(valor) {
     if (valor === undefined || valor === null || valor === '') return '—';
     const num = this.converterParaNumero(valor);
     if (num === null) return String(valor);
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
-  };
-
-  formatarPercentual(valor) {
-    if (valor === undefined || valor === null || valor === '') return '—';
-    const num = this.converterParaNumero(valor);
-    num = num*100;
-    if (num === null) return String(valor);
-    return new String(valor);
-  };
+  },
 
   converterParaNumero(valor) {
     if (valor === undefined || valor === null || valor === '') return null;
@@ -110,7 +102,7 @@ const Utils = {
     const str = String(valor).trim().replace(/\./g, '').replace(',', '.');
     const num = parseFloat(str);
     return isNaN(num) ? null : num;
-  };
+  },
 
   escapeHtml(str) {
     if (str === undefined || str === null) return '';
@@ -156,7 +148,7 @@ const LoginModule = {
         username: username,
         password: password
       });
-      console.log(result)
+
       if (result && result.success) {
         DashboardModule.exibirDados(result.data);
         document.getElementById('login-container').style.display = 'none';
@@ -203,10 +195,6 @@ const DashboardModule = {
       'Quinquenio', 'DSR', 'DSR HE', 'HE', 'Prêmio', 'TOTAL'
     ];
 
-    const camposPercentual = [
-      'PRODUTIVIDADE'
-      ];
-
     const nomesAmigaveis = {
       'Base': 'Salário Base',
       'Quebra de Caixa': 'Quebra de Caixa',
@@ -218,7 +206,6 @@ const DashboardModule = {
       'DSR HE': '📅 DSR sobre Hora extra',
       'Prêmio': '🎁 Prêmio',
       'HE': '⏰ Horas Extras',
-      '% DE ATINGIMENTO DO PRÊMIO': '% Atingimento'
       'TOTAL': '💵 TOTAL LÍQUIDO'
     };
 
@@ -228,7 +215,7 @@ const DashboardModule = {
       { titulo: '📊 Produtividade', campos: ['TML', 'PRODUTIVIDADE', 'Tempo médio de liberação / Checklist', 'Tempo em rota (escala) (Experiência)'] },
       { titulo: '💳 Vales e Ocorrências', campos: ['Vales e Atend.', 'Quebra de Caixa', 'Não Haver vales não autorizados', '85% de Entrega no Cliente e Não Haver vales não autorizados', 'Não Haver Falta Injustificada/ Relatos'] },
       { titulo: '📦 Devoluções', campos: ['DEVOLUÇÕES', 'Não haver devolução por responsábilidade própria'] },
-      { titulo: '💰 Vencimentos e Proventos', campos: ['HE Ajustadas','% Atingimento' ,'85%', 'Prêmio tempo de empresa sem falta', 'Comissão Caixa', 'DSR', 'DSR HE', 'Quinquenio', 'Prêmio', 'HE'] }
+      { titulo: '💰 Vencimentos e Proventos', campos: ['HE Ajustadas', '85%', 'Prêmio tempo de empresa sem falta', 'Comissão Caixa', 'DSR', 'DSR HE', 'Quinquenio', 'Prêmio', 'HE'] }
     ];
 
     grupos.forEach(grupo => {
@@ -248,8 +235,6 @@ const DashboardModule = {
             valor = '—';
           } else if (camposMonetarios.includes(chave)) {
             valor = Utils.formatarMoeda(valor);
-          } else if (camposPercentual.includes(chave)) {
-            valor = Utils.formatarPercentual(valor);
           }
           const linha = document.createElement('div');
           linha.className = 'linha';
